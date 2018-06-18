@@ -48,19 +48,19 @@ const byPropKey = (propertyName, value) => () => ({
   [propertyName]: value,
 });
 
-class ExamTable extends Component{
+const INITIAL_STATE = {
+  sectionType:"",
+  questionRef:{},
+};
+
+class ExamSecion extends Component{
 	constructor(props){
 		super(props);
-		this.state = {exams: new Array(0),};
-		this.getExams = this.getExams.bind(this);
-		this.render = this.render.bind(this);
+		this.state = {sectionType:props.sectionType,
+                  questionRef:props.questionRef,
+                  examRef:props.examRef};
 	}
-
-	getExams(exams){
-		this.setState(byPropKey("exams", exams));
-		console.log("exams" + this.state.exams);
-	}
-
+  /*
 	componentDidMount(){
 		const exams = []
 		firestore.getAllExam().then(function(querySnapshot) {
@@ -77,69 +77,38 @@ class ExamTable extends Component{
 
 	componentWillUnmount(){
 		this.getExams = ()=>{}
-	}
+	}*/
 
-	newExam = (event) => {
+	toQuestion = (event, examRef, questionType, newQuestion, questionRef="") => {
     	//this.setState(byPropKey("count", this.state.count + 1));
     	// router to new exam page
     	const {
 	      history,
 	    } = this.props;
-	    history.push(routes.NEW_EXAM);
-	    event.preventDefault();
+	    console.log("to => " + questionRef)
+      console.log("from => " + examRef)
+      console.log("of => " + questionType)
+      history.push({
+        pathname: routes.QUESTION,
+        state: {questionRef:questionRef,
+                questionType:questionType,
+                newQuestion:newQuestion,
+                examRef:examRef,}
+      });
+      event.preventDefault();
   	};
 
-  	toExamDetail = (event, examRef) =>{
-  		// router to exam page
-  		//console.log("to => " + event.target.id)
-  		const {
-	      history,
-	    } = this.props;
-	    console.log("to => " + examRef)
-	    history.push({
-		  pathname: routes.EXAM,
-		  state: {examRef:examRef,}
-		});
-	    event.preventDefault();
-  	};
-
-  	render() {
+  render() {
     const { classes } = this.props;
-    const {exams} = this.state;
-    var exams_c = [];
-    console.log("exams length" + this.state.exams.length);
-    for (var i = 0; i < this.state.exams.length; i++) {
-    	console.log("exam number " + this.state.exams[i].id);
-    	const buttonId = this.state.exams[i].examRef
-      exams_c.push(
-      	<Grid key={"exam" + i}  item>
-        <Card className={classes.card}>
-          <CardContent>
-            <Typography className={classes.title} color="textSecondary">
-              {this.state.exams[i].id}
-            </Typography>
-            <Typography className={classes.pos} color="textSecondary">
-              source
-            </Typography>
-            <Typography component="p">
-              year
-            </Typography>
-          </CardContent>
-          <CardActions>
-          	{console.log("button id => " +this.state.exams[i].examRef)}
-            <Button id={buttonId} size="small" onClick={(e)=>this.toExamDetail(e, buttonId)}>View Exam</Button>
-          </CardActions>
-        </Card>
-        </Grid>
-      );
-    }
+    const { sectionType, questionRef, examRef} = this.state;
+    
     return (
       <Paper className={classes.root} elevation={4}>
         <Typography variant="headline" component="h3">
-          Exams:
+          {sectionType}
         </Typography>
         <Typography component="p">
-          Click on "View Exam" to view the detail of the exam
+          Click on "View Question" to view the detail of the question
         </Typography>
         <Grid container
         	spacing={16}
@@ -147,10 +116,27 @@ class ExamTable extends Component{
             alignItems="flex-start"
             direction="row"
             justify="flex-start">
-        {exams_c}
-        <Grid key={"AddExam"}  item>
-        <Button variant="contained" onClick={this.newExam}>
-          Add New Exam
+        {Object.keys(questionRef).map(function(key, index){
+          const buttonid = questionRef[key];
+          return(
+            <Grid key={sectionType + index}  item>
+              <Card className={classes.card}>
+                <CardContent>
+                  <Typography className={classes.title} color="textSecondary">
+                    {key}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  {console.log("button id => " + buttonid)}
+                  <Button id={buttonid} size="small" onClick={(e)=>this.toQuestion(e, examRef, sectionType, false,buttonid)}>View Question</Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          );
+        })}
+        <Grid key={"AddQuestion"}  item>
+        <Button variant="contained" onClick={(e)=>this.toQuestion(e, examRef, sectionType, true)}>
+          Add New Question
         </Button>
         </Grid>
         </Grid>
@@ -160,4 +146,4 @@ class ExamTable extends Component{
 
 }
 
-export default withRouter(withStyles(styles)(ExamTable));
+export default withRouter(withStyles(styles)(ExamSecion));

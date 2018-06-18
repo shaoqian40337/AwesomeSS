@@ -11,6 +11,7 @@ import HomePage from './Home';
 import AccountPage from './Account';
 import ExamPage from './ExamPage';
 import QuestionPage from './QuestionPage';
+import NewExamPage from './NewExamPage';
 
 import * as routes from '../constants/routes';
 import { firebase } from '../firebase';
@@ -54,6 +55,10 @@ class App extends Component {
           <Route
             exact path={routes.HOME}
             component={() => <HomePage />}
+          />
+          <Route
+            exact path={routes.NEW_EXAM}
+            component={() => <NewExamPage />}
           />
           <Route
             exact path={routes.EXAM}

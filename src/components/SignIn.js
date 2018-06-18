@@ -64,8 +64,6 @@ class SignInForm extends Component {
       .catch(error => {
         this.setState(byPropKey('error', error));
       });
-
-    event.preventDefault();
   }
   
   render() {
@@ -114,7 +112,3 @@ class SignInForm extends Component {
 
 
 export default withRouter(withStyles(styles)(SignInForm));
-
-export {
-  SignInForm,
-};
